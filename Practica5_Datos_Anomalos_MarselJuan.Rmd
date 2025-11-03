@@ -184,17 +184,43 @@ Escribe una función que detecte los outliers de un vector $x$ para cada uno de 
 
 ```{r , include = FALSE}
 # Regla 3 sigma
-
+tres_sigma <- function(x){
+  media = mean(x, na.rm=T)
+  desv = sd(x, na.rm = T)
+  si_no = (x <= media-3*desv | x >= media-3*desv)
+  ifelse(is.na(x), NA, si_no)
+}
 
 # Identificador Hampel
-
+hhampel <- function(x){
+  MADM = mad(x, na.rm=T)
+  mediana = median(x, na.rm=T)
+  no_si = (x <= mediana-3*desv | x >= mediana-3*desv)
+  ifelse(is.na(x), NA, no_si)
+}
 
 
 # Regla boxplot
-
+boxx <- function(x){
+  v_cinco = quantile(x, probs=0.25)
+  v_siete = quantile(x, probs=0.75)
+  disp = IQR(v_cinco - v_siete)
+  no__si= (x>v_cinco+1.5/disp | x<v_siete-1.5/disp)
+  ifelse(is.na(x), NA, no__si)
+}
 
 # Percentiles
+percetil <- function(x){
+  v_s_cinco =  quantile(x, probs=0.05) 
+  v_n_cinco = quantile(x, probs=0.95) 
+  condi = (x<v_s_cinco | x> v_n_cinco)
+  ifelse(is.na(x), NA, condi)
+}
 
+```
+
+```{r}
+percetil(clean_iris$Sepal.Length)
 ```
 
 
