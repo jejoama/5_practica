@@ -155,6 +155,17 @@ Hazlo para el data frame con observaciones completas `clean_iris` (que no tiene 
   * Compara los resultados para los dos conjuntos en la variable `Petal.Length`.
 
 ```{r , include = TRUE}
+library(dplyr)
+#con clean iris
+
+
+clean_clean <- clean_iris %>%
+  summarise(across(where(is.numeric), list(
+    media = ~mean(.x, na.rm = TRUE),
+    desv = ~sd(.x, na.rm = TRUE),
+    media_abs = ~mad(.x, na.rm = TRUE),
+    ran_in = ~IQR(.x, na.rm = TRUE)
+  )))
 
 ```
 
