@@ -187,7 +187,7 @@ Escribe una función que detecte los outliers de un vector $x$ para cada uno de 
 tres_sigma <- function(x){
   media = mean(x, na.rm=T)
   desv = sd(x, na.rm = T)
-  si_no = (x <= media-3*desv | x >= media-3*desv)
+  si_no = (x <= media-3*desv | x >= media+3*desv)
   ifelse(is.na(x), NA, si_no)
 }
 
@@ -195,7 +195,7 @@ tres_sigma <- function(x){
 hhampel <- function(x){
   MADM = mad(x, na.rm=T)
   mediana = median(x, na.rm=T)
-  no_si = (x <= mediana-3*desv | x >= mediana-3*desv)
+  no_si = (x <= mediana-3*MADM | x >= mediana-3*MADM)
   ifelse(is.na(x), NA, no_si)
 }
 
@@ -205,22 +205,18 @@ boxx <- function(x){
   v_cinco = quantile(x, probs=0.25)
   v_siete = quantile(x, probs=0.75)
   disp = IQR(v_cinco - v_siete)
-  no__si= (x>v_cinco+1.5/disp | x<v_siete-1.5/disp)
+  no__si= (x<v_cinco-1.5*disp | x>v_siete+1.5*disp)
   ifelse(is.na(x), NA, no__si)
 }
 
 # Percentiles
 percetil <- function(x){
-  v_s_cinco =  quantile(x, probs=0.05) 
-  v_n_cinco = quantile(x, probs=0.95) 
+  v_s_cinco =  quantile(x, probs=0.05, na.rm=T) 
+  v_n_cinco = quantile(x, probs=0.95, na.rm=T) 
   condi = (x<v_s_cinco | x> v_n_cinco)
   ifelse(is.na(x), NA, condi)
 }
 
-```
-
-```{r}
-percetil(clean_iris$Sepal.Length)
 ```
 
 
@@ -230,7 +226,25 @@ Utiliza la función `mutate` y `across` para identificar los outliers en la vari
 Nota: podría extenderse la aplicación a todas las variables numéricas usando también `mutate`, `across` y `where`. 
 
 ```{r Solucion ejercicio 6, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+library(dplyr)
+clean_iris_outliers <- clean_iris %>%
+  mutate(
+    out_sigma = tres_sigma(Petal.Length),
+    out_hampel = hhampel(Petal.Length),
+    out_boxplot = boxx(Petal.Length),
+    out_percentil = percetil(Petal.Length)
+  )
 
+
+clean_iris_outliers <- clean_iris %>%
+  mutate(
+    across(where(is.numeric), list(
+      sigma = ~tres_sigma(.),
+      hampel = ~hhampel(.),
+      box = ~boxx(.),
+      perc = ~percetil(.)
+    ), .names = "{.col}_{.fn}")
+  )
 
 
 ```
