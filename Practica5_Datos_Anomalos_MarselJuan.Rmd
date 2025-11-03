@@ -257,7 +257,13 @@ En los métodos de detección de outliers analizados, examina los resultados com
   * Los valores etiquetados como outliers (ordenados de menor a mayor).
 
 ```{r Solucion ejercicio 7, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
-
+clean_iris_outliers %>%
+  summarise(
+    sigma_total = sum(sigma_out, na.rm = TRUE),
+    hampel_total = sum(hampel_out, na.rm = TRUE),
+    box_total = sum(box_out, na.rm = TRUE),
+    perc_total = sum(perc_out, na.rm = TRUE)
+  )
 ```
 
 ## Ejercicio 8: Representación gráfica
